@@ -1,0 +1,3 @@
+requests~=2.31.0
+toml~=0.10.2
+uptime_kuma_api==1.0.1

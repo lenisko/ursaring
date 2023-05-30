@@ -1,0 +1,19 @@
+[general]
+sleep = 60
+error_sleep = 60
+timeout = 1
+max_workers = 6
+locale = "pl_PL.UTF-8"
+
+[backend]
+url = "http://127.0.0.1:17272/status"
+threshold = 0.5
+
+[uptime]
+url = "https://uptime.example.com"
+login = "xxx"
+password = "xxx"
+slug = "pogo"
+tag_id = 4
+group = "Scanners"
+alerts = false

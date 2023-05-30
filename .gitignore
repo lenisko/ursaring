@@ -1,0 +1,17 @@
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+.pyre/
+
+config.toml
+
+.idea/
+.python-version
+*.geojson
+__pycache__/
