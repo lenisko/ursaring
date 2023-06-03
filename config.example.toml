@@ -14,6 +14,6 @@ url = "https://uptime.example.com"
 login = "xxx"
 password = "xxx"
 slug = "pogo"
-tag_id = 4
+tag_name = "Worker"
 group = "Scanners"
 alerts = false
