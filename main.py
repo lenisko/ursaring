@@ -8,14 +8,14 @@ import toml
 from uptime_kuma_api import UptimeKumaApi, MonitorType
 
 
-def add_monitor(api: UptimeKumaApi, name: str) -> dict:
+def add_monitor(api: UptimeKumaApi, name: str, tag_id: int) -> dict:
     new = api.add_monitor(
         type=MonitorType.PUSH,
         name=name.title(),
         interval=70,
     )
     api.add_monitor_tag(
-        tag_id=config['uptime']['tag_id'],
+        tag_id=tag_id,
         monitor_id=new['monitorID']
     )
     new = api.get_monitor(new['monitorID'])
@@ -27,10 +27,13 @@ def add_monitor(api: UptimeKumaApi, name: str) -> dict:
     }
 
 
-def clean_monitors(api: UptimeKumaApi) -> None:
-    for m in api.get_monitors():
-        if any(tag['tag_id'] == config['uptime']['tag_id'] for tag in m['tags']):
-            api.delete_monitor(m['id'])
+def fetch_tags(api: UptimeKumaApi) -> dict:
+    output: dict = {
+        tag["name"]: tag["id"]
+        for tag in api.get_tags()
+    }
+
+    return output
 
 
 def delete_monitor(api: UptimeKumaApi, mid: int) -> None:
@@ -106,11 +109,12 @@ if __name__ == '__main__':
                 # login to uptime-kuma
                 kuma = UptimeKumaApi(config['uptime']['url'])
                 kuma.login(config['uptime']['login'], config['uptime']['password'])
+                kuma_tag = fetch_tags(kuma)[config['uptime']['tag_name']]
 
                 # get a list of existing workers on uptime-kuma
                 monitors = kuma.get_monitors()
                 for monitor in monitors:
-                    if any(tag['tag_id'] == config['uptime']['tag_id'] for tag in monitor['tags']):
+                    if any(tag['tag_id'] == kuma_tag for tag in monitor['tags']):
                         uptime_monitors[monitor['name']] = {
                             'id': monitor['id'],
                             'name': monitor['name'],
@@ -121,7 +125,7 @@ if __name__ == '__main__':
                 for area in backend_areas.keys():
                     if area not in uptime_monitors.keys():
                         print(f"Added new monitor {area}")
-                        new_monitor = add_monitor(kuma, area)
+                        new_monitor = add_monitor(kuma, area, kuma_tag)
                         uptime_monitors[new_monitor['name']] = new_monitor
 
                 # check old entries on uptime-kuma and remove them
