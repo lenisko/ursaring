@@ -50,8 +50,6 @@ def ping_monitors(uptime_data: dict, backend_data: dict):
         area_url = f"{config['uptime']['url']}/api/push/{url_token}?status={msg}"
         urls.append(area_url)
 
-    print(f"Pinging {len(urls)} URLs")
-
     with ThreadPoolExecutor(max_workers=config['general']['max_workers']) as executor:
         futures = []
 
