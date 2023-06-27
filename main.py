@@ -93,11 +93,13 @@ if __name__ == '__main__':
             time.sleep(config['general']['error_sleep'])
             continue
 
-        # maybe rework a logic? someday.
+        ts_now = int(time.time())
         backend_areas = {
             area['name']: (
-                area['worker_managers'][0]['active_workers'] / area['worker_managers'][0]['expected_workers']
-                >= config['backend']['threshold']
+                sum(
+                    1 for worker in area['worker_managers'][0]['workers']
+                    if ts_now - worker['last_data'] <= config['backend']['worker_timeout']
+                ) >= config['backend']['threshold']
             ) for area in backend_status['areas'] if area['worker_managers'][0]['expected_workers'] != 0
         }
 
